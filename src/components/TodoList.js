@@ -9,7 +9,7 @@ export default function TodoList({todos, deleteTodo}) {
         return (
             <Badge
                 p={4}
-                w="lg"
+                w="50vw"
                 colorScheme="green"
                 variant="outline"
                 borderRadius={4}
