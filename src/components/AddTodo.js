@@ -31,7 +31,7 @@ export default function AddTodo({addTodo}) {
                     variant="filled"
                     placeholder="Add Milk to the basket"
                     value={input}
-                    width="sm"
+                    w="xl"
                     onChange={ (e) => {setInput(e.target.value)}}
                 />
                 <Button

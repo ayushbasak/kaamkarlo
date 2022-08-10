@@ -3,6 +3,7 @@ import { FaSun, FaMoon } from 'react-icons/fa'
 import './App.css';
 import AddTodo from './components/AddTodo';
 import TodoList from './components/TodoList';
+import moment from 'moment';
 
 import { useEffect, useState } from 'react'
 
@@ -20,7 +21,14 @@ function App() {
   }
 
   function addTodo(text){
-    let newCurr = [...curr, {id: curr.length + 1, body: text, time: new Date().toLocaleString()}]
+    let newCurr = [
+      ...curr, 
+      {
+        id: curr.length + 1, 
+        body: text, 
+        time: moment(new Date()).format('lll')
+      }
+    ]
     setCurr(newCurr);
   }
 
