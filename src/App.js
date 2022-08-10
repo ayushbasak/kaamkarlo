@@ -20,7 +20,7 @@ function App() {
   }
 
   function addTodo(text){
-    let newCurr = [...curr, {id: curr.length + 1, body: text}]
+    let newCurr = [...curr, {id: curr.length + 1, body: text, time: new Date().toLocaleString()}]
     setCurr(newCurr);
   }
 
