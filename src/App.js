@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios';
 
 function App() {
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithPopup, logout, user, isAuthenticated, isLoading } = useAuth0();
   const [curr, setCurr] = useState(() => JSON.parse(localStorage.getItem('todos')) || [])
 
   const callAPI = useRef(false);
@@ -28,7 +28,6 @@ function App() {
         });
       }
     }
-    console.log(callAPI.current);
     if (callAPI.current) {
       callAPI.current = false;
       fetchData();
@@ -131,8 +130,9 @@ function App() {
             </> :
               !isLoading ?
               <>
-                <Button onClick={() => loginWithRedirect()}>Login</Button>
+                <Button onClick={() => loginWithPopup()}>Login</Button>
                 <Text fontSize='4xl'> You must be logged in to use this app </Text>
+                <Text>Make sure to verify your email address!</Text>
               </> : 
               <Stack w='xl'>
                 <Text fontSize='5xl' color='gray.400'>Loading...</Text>
