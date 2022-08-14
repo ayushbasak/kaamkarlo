@@ -9,7 +9,7 @@ export default function TodoList({todos, deleteTodo}) {
         return (
             <Badge
                 p={4}
-                w="50vw"
+                w="40vw"
                 colorScheme="green"
                 variant="outline"
                 borderRadius={4}
@@ -34,7 +34,7 @@ export default function TodoList({todos, deleteTodo}) {
         p={3}
         m={3}
         width="5xl"
-        maxW = {{ base: '90vw', sm: '80vw', lg: '50vw', xl: '60vw' }}
+        maxW = {{ base: '90vw', sm: '80vw', lg: '80vw', xl: '80vw' }}
         alignItems="stretch"
         >
             {
@@ -44,11 +44,13 @@ export default function TodoList({todos, deleteTodo}) {
                             isURL(todo.body) ?
                                 <Link href={todo.body} isExternal>
                                     <HStack>
-                                        <Container maxW='md' centerContent><Text>{todo.body}</Text> </Container>
+                                        <Container maxW='lg'><Text isTruncated>{todo.body}</Text> </Container>
                                         <BiLinkExternal /> 
                                     </HStack>
                                 </Link> :
-                                <Text>{todo.body}</Text>
+                                <Container maxW='lg'>
+                                    <Text maxW='80vw' isTruncated >{todo.body}</Text>
+                                </Container>
                         }
                         <Spacer />
                         <Text>{todo.time}</Text>
