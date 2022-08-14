@@ -44,12 +44,12 @@ export default function TodoList({todos, deleteTodo}) {
                             isURL(todo.body) ?
                                 <Link href={todo.body} isExternal>
                                     <HStack>
-                                        <Container maxW='lg'><Text isTruncated>{todo.body}</Text> </Container>
+                                        <Container maxW='xl'><Text maxW = {{ base: '40vw', sm: '40vw', lg: '70vw', xl: '70vw' }} isTruncated>{todo.body}</Text> </Container>
                                         <BiLinkExternal /> 
                                     </HStack>
                                 </Link> :
-                                <Container maxW='lg'>
-                                    <Text maxW='80vw' isTruncated >{todo.body}</Text>
+                                <Container maxW='xl'>
+                                    <Text maxW = {{ base: '50vw', sm: '50vw', lg: '70vw', xl: '70vw' }} isTruncated >{todo.body}</Text>
                                 </Container>
                         }
                         <Spacer />

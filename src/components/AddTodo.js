@@ -1,6 +1,5 @@
 import { Button, HStack, Input, useToast } from '@chakra-ui/react'
 import React, { useState } from 'react'
-
 export default function AddTodo({addTodo, saveList}) {
 
     const toast = useToast()
@@ -27,12 +26,12 @@ export default function AddTodo({addTodo, saveList}) {
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <HStack empty={8}>
+                <HStack empty={8}  m ={10} maxW = {{ base: '80vw', sm: '80vw', lg: '100vw', xl: '80vw' }}>
                     <Input 
                         variant="filled"
                         placeholder="Add Milk to the basket"
                         value={input}
-                        w="md"
+                        w="xl"
                         onChange={ (e) => {setInput(e.target.value)}}
                     />
                     <Button
@@ -43,7 +42,7 @@ export default function AddTodo({addTodo, saveList}) {
                         Add
                     </Button>
                     <Button
-                        colorScheme="pink"
+                        colorScheme="blue"
                         px={8}
                         onClick={() => saveList()}
                     >
