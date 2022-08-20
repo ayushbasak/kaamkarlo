@@ -153,15 +153,15 @@ function App() {
               <FaSun />
             } 
             isRound={true}
-            size="lg" 
+            size='md'
             alignSelf="flex-start"
             onClick={toggleColorMode}
           />
           {
             isAuthenticated && 
             <HStack spacing={25}>
-              <Text fontSize='2xl' border="1px" p='5px 10px' borderRadius='10px'>{ user.name }</Text>
-              <Image src={user.picture} alt="Profile" borderRadius='full' boxSize='50px'/>
+              <Text  fontSize={{ base: '10px', md: '20px', lg: '25px' }} border="1px" p='5px 10px' borderRadius='10px'>{ user.name }</Text>
+              <Image src={user.picture} alt="Profile" borderRadius='full' boxSize='50px' border='1px solid black'/>
               <Button onClick={() => logout({ returnTo: window.location.origin })}>Logout</Button>
             </HStack>
           }
@@ -170,7 +170,7 @@ function App() {
         <Heading
           p={10}
           fontWeight="extrabold"
-          size="4xl"
+          fontSize={{ base: '24px', md: '40px', lg: '56px' }}
           bgGradient="linear(to-r, pink.500, pink.300, blue.500)"
           bgClip="text"
         >
