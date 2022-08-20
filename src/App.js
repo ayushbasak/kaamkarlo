@@ -11,30 +11,38 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios';
 
 function App() {
-  const { loginWithPopup, logout, user, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithPopup, logout, user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [curr, setCurr] = useState(() => JSON.parse(localStorage.getItem('todos')) || [])
-
+  const toast = useToast();
   const callAPI = useRef(false);
   callAPI.current = curr.length === 0;
   useEffect(() => {
-    async function fetchData() {
-      if (user) {
-        await axios.get('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/getKaamKarlo', { params: { user_id: user.sub }})
-        .then(res => {
-          localStorage.setItem('todos', res.data);
-          setCurr(JSON.parse(res.data));
-        }).catch(err => {
-          console.log(err);
-        });
-      }
-    }
     if (callAPI.current) {
+      async function fetchData(accessToken) {
+        if (user) {
+          const accessToken = await getAccessTokenSilently();
+          await axios.get('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/getKaamKarlo', { headers: { Authorization: `Bearer ${accessToken}` } })
+          .then(res => {
+            localStorage.setItem('todos', JSON.stringify(res.data));
+            setCurr(res.data);
+            toast({
+              title: 'Success',
+              description: 'Todos fetched successfully',
+              status: 'success',
+              duration: 2000,
+              isClosable: true,
+              position: 'top-left',
+            });
+          }).catch(err => {
+            console.log(err);
+          });
+        }
+      }
       callAPI.current = false;
       fetchData();
     }
-  }, [user]);
+  }, [user, getAccessTokenSilently, toast]);
 
-  
   useEffect(()=>{
     localStorage.setItem('todos', JSON.stringify(curr));
   }, [curr])
@@ -56,10 +64,10 @@ function App() {
     setCurr(newCurr);
   }
   
-  const toast = useToast();
   
   async function saveList() {
-    await axios.post('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/createKaamKarlo', curr, { params: { user_id: user.sub } })
+    const accessToken = await getAccessTokenSilently();
+    await axios.post('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/createKaamKarlo', curr, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(res => {
         toast(
           {
