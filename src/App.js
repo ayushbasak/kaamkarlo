@@ -1,48 +1,84 @@
-import { Heading, IconButton, VStack, useColorMode, Button, Text, Image, useToast, HStack, Skeleton, Stack } from '@chakra-ui/react';
+import { 
+  Heading, 
+  IconButton, 
+  VStack, 
+  useColorMode,
+  Button, 
+  Text, 
+  Image, 
+  useToast, 
+  HStack, 
+  Skeleton, 
+  Stack,
+  Link,
+  Box
+} from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa'
+import { AiFillGithub, AiFillHeart, AiFillLinkedin, AiFillTwitterSquare } from 'react-icons/ai'
 import './App.css';
 import AddTodo from './components/AddTodo';
 import TodoList from './components/TodoList';
+import axios from 'axios';
 import moment from 'moment';
 
 import { useAuth0 } from '@auth0/auth0-react'
 
 import { useEffect, useRef, useState } from 'react'
-import axios from 'axios';
+import { BiGlobe } from 'react-icons/bi';
 
 function App() {
-  const { loginWithPopup, logout, user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-  const [curr, setCurr] = useState(() => JSON.parse(localStorage.getItem('todos')) || [])
+  const { 
+    user, 
+    isAuthenticated, 
+    isLoading, 
+    loginWithPopup, 
+    logout, 
+    getAccessTokenSilently 
+  } = useAuth0();
+  
   const toast = useToast();
+
+  const [curr, setCurr] = useState(() => JSON.parse(localStorage.getItem('todos')) || [])
+  
+  // Call API function only once if condition satisfies
   const callAPI = useRef(false);
   callAPI.current = curr.length === 0;
+  
   useEffect(() => {
     if (callAPI.current) {
-      async function fetchData(accessToken) {
-        if (user) {
+      async function fetchData() {
+        if (isAuthenticated) {
           const accessToken = await getAccessTokenSilently();
-          await axios.get('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/getKaamKarlo', { headers: { Authorization: `Bearer ${accessToken}` } })
-          .then(res => {
-            localStorage.setItem('todos', JSON.stringify(res.data));
-            setCurr(res.data);
-            toast({
-              title: 'Success',
-              description: 'Todos fetched successfully',
-              status: 'success',
-              duration: 2000,
-              isClosable: true,
-              position: 'top-left',
+          await axios.get('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/getKaamKarlo', 
+            { 
+              headers: {
+                Authorization: `Bearer ${accessToken}` 
+              }
+            }
+          )
+            .then(res => {
+              localStorage.setItem('todos', JSON.stringify(res.data));
+              setCurr(res.data);
+              toast({
+                title: 'Success',
+                description: 'Todos fetched successfully',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+                position: 'top-left',
+              });
+            })
+            .catch(err => {
+              console.log(err);
             });
-          }).catch(err => {
-            console.log(err);
-          });
         }
       }
       callAPI.current = false;
       fetchData();
     }
-  }, [user, getAccessTokenSilently, toast]);
+  }, [isAuthenticated, getAccessTokenSilently, toast]);
 
+  // update localstorage on every change of todos
   useEffect(()=>{
     localStorage.setItem('todos', JSON.stringify(curr));
   }, [curr])
@@ -66,8 +102,18 @@ function App() {
   
   
   async function saveList() {
+    if (!isAuthenticated) {
+      return;
+    }
     const accessToken = await getAccessTokenSilently();
-    await axios.post('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/createKaamKarlo', curr, { headers: { Authorization: `Bearer ${accessToken}` } })
+    await axios.post('https://asia-south1.gcp.data.mongodb-api.com/app/application-0-idmbw/endpoint/createKaamKarlo', 
+      curr, 
+      { 
+        headers: {
+          Authorization: `Bearer ${accessToken}` 
+        } 
+      }
+    )
       .then(res => {
         toast(
           {
@@ -98,7 +144,7 @@ function App() {
 
   return (
     <div className="App">
-      <VStack p={4} w="100vw">
+      <VStack p={4} w="100%">
         <HStack w='100%' alignSelf='flex-start' justifyContent='space-between'>
           <IconButton 
             icon={
@@ -140,7 +186,7 @@ function App() {
               <>
                 <Button onClick={() => loginWithPopup()}>Login</Button>
                 <Text fontSize='4xl'> You must be logged in to use this app </Text>
-                <Text>Make sure to verify your email address!</Text>
+                {/* <Text>Make sure to verify your email address!</Text> */}
               </> : 
               <Stack w='xl'>
                 <Text fontSize='5xl' color='gray.400'>Loading...</Text>
@@ -152,6 +198,13 @@ function App() {
               </Stack>
             
         }
+        <HStack>
+          <Text top='100%'>made with ❤️ by @ayushbasak</Text>
+          <Link href="https://github.com/ayushbasak"><AiFillGithub/></Link>
+          <Link href="https://linkedin.com/in/ayushbasak"><AiFillLinkedin/></Link>
+          <Link href="https://basak.app"><BiGlobe/></Link>
+        </HStack>
+        <Text>&copy; 2022 KaamKarlo</Text>
       </VStack>
     </div>
   );
