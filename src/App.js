@@ -11,10 +11,9 @@ import {
   Skeleton, 
   Stack,
   Link,
-  Box
 } from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa'
-import { AiFillGithub, AiFillHeart, AiFillLinkedin, AiFillTwitterSquare } from 'react-icons/ai'
+import { AiFillGithub, AiFillLinkedin } from 'react-icons/ai'
 import './App.css';
 import AddTodo from './components/AddTodo';
 import TodoList from './components/TodoList';
