@@ -10,10 +10,8 @@ import {
   HStack, 
   Skeleton, 
   Stack,
-  Link,
 } from '@chakra-ui/react';
 import { FaSun, FaMoon } from 'react-icons/fa'
-import { AiFillGithub, AiFillLinkedin } from 'react-icons/ai'
 import './App.css';
 import AddTodo from './components/AddTodo';
 import TodoList from './components/TodoList';
@@ -23,7 +21,7 @@ import moment from 'moment';
 import { useAuth0 } from '@auth0/auth0-react'
 
 import { useEffect, useRef, useState } from 'react'
-import { BiGlobe } from 'react-icons/bi';
+import Footer from './components/Footer';
 
 function App() {
   const { 
@@ -87,13 +85,30 @@ function App() {
     setCurr(newCurr)
   }
 
-  function addTodo(text){
+  function updateTodo(id, value) {
+    let newCurr = curr.map(d => {
+      if(d.id === id){
+        if (typeof value === 'boolean')
+          d.completed = value;
+        else
+          d.status = Number(value) || 0;
+      }
+      return d;
+    })
+    setCurr(newCurr)
+  }
+
+
+
+  function addTodo(content){
     let newCurr = [
       ...curr, 
       {
-        id: curr.length + 1, 
-        body: text, 
-        time: moment(new Date()).format('lll')
+        id: (Math.random() + 1).toString(36).substring(2), 
+        body: content.text,
+        dueDate: content.dueDate, 
+        time: moment(new Date()).format('lll'),
+        status: 0,
       }
     ]
     setCurr(newCurr);
@@ -143,7 +158,7 @@ function App() {
 
   return (
     <div className="App">
-      <VStack p={4} w="100%">
+      <VStack p={4} w="100%" h='100%'>
         <HStack w='100%' alignSelf='flex-start' justifyContent='space-between'>
           <IconButton 
             icon={
@@ -159,8 +174,15 @@ function App() {
           {
             isAuthenticated && 
             <HStack spacing={25}>
-              <Text  fontSize={{ base: '10px', md: '20px', lg: '25px' }} border="1px" p='5px 10px' borderRadius='10px'>{ user.name }</Text>
-              <Image src={user.picture} alt="Profile" borderRadius='full' boxSize='50px' border='1px solid black'/>
+              <Text 
+                fontSize={{ base: '10px', md: '20px', lg: '25px' }} 
+                border="1px" 
+                p='5px 10px' 
+                borderRadius='10px'
+              >
+                { user.name }
+              </Text>
+              <Image src={user.picture} alt="DP" borderRadius='full' boxSize='50px' border='1px solid black'/>
               <Button onClick={() => logout({ returnTo: window.location.origin })}>Logout</Button>
             </HStack>
           }
@@ -178,14 +200,14 @@ function App() {
         {
           isAuthenticated ? 
             <>
-              <TodoList todos={curr} deleteTodo={deleteTodo}/>
+              <TodoList todos={curr} deleteTodo={deleteTodo} updateTodo={updateTodo}/>
               <AddTodo addTodo={addTodo} saveList={saveList}/>
             </> :
               !isLoading ?
               <>
                 <Button onClick={() => loginWithPopup()}>Login</Button>
                 <Text fontSize='4xl'> You must be logged in to use this app </Text>
-                {/* <Text>Make sure to verify your email address!</Text> */}
+                <Text>Make sure to verify your email address!</Text>
               </> : 
               <Stack w='xl'>
                 <Text fontSize='5xl' color='gray.400'>Loading...</Text>
@@ -197,13 +219,7 @@ function App() {
               </Stack>
             
         }
-        <HStack>
-          <Text top='100%'>made with ❤️ by @ayushbasak</Text>
-          <Link href="https://github.com/ayushbasak"><AiFillGithub/></Link>
-          <Link href="https://linkedin.com/in/ayushbasak"><AiFillLinkedin/></Link>
-          <Link href="https://basak.app"><BiGlobe/></Link>
-        </HStack>
-        <Text>&copy; 2022 KaamKarlo</Text>
+        <Footer />
       </VStack>
     </div>
   );
