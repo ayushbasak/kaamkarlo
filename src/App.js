@@ -11,7 +11,7 @@ import {
   Skeleton, 
   Stack,
 } from '@chakra-ui/react';
-import { FaSun, FaMoon } from 'react-icons/fa'
+import { FaSun, FaMoon, FaCrown } from 'react-icons/fa'
 import './App.css';
 import AddTodo from './components/AddTodo';
 import TodoList from './components/TodoList';
@@ -22,6 +22,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 
 import { useEffect, useRef, useState } from 'react'
 import Footer from './components/Footer';
+
 
 function App() {
   const { 
@@ -36,11 +37,17 @@ function App() {
   const toast = useToast();
 
   const [curr, setCurr] = useState(() => JSON.parse(localStorage.getItem('todos')) || [])
-  
+  const [userInfo, setUserInfo] = useState({});  
   // Call API function only once if condition satisfies
   const callAPI = useRef(false);
   callAPI.current = curr.length === 0;
   
+  useEffect(() => {
+    if (window.localStorage.userInfo !== undefined) {
+      setUserInfo(JSON.parse(window.localStorage.userInfo));
+    }
+  }, [])
+
   useEffect(() => {
     if (callAPI.current) {
       async function fetchData() {
@@ -55,7 +62,15 @@ function App() {
           )
             .then(res => {
               localStorage.setItem('todos', JSON.stringify(res.data));
-              setCurr(res.data);
+              setCurr(res.data.data);
+
+              const save_userInfo = {
+                email: res.data.email,
+                premium: res.data.premium || false,
+              };
+
+              window.localStorage.setItem('userInfo', JSON.stringify(save_userInfo));
+              setUserInfo(save_userInfo)
               toast({
                 title: 'Success',
                 description: 'Todos fetched successfully',
@@ -101,6 +116,7 @@ function App() {
 
 
   function addTodo(content){
+    console.log(userInfo, ' user info');
     let newCurr = [
       ...curr, 
       {
@@ -114,7 +130,17 @@ function App() {
     setCurr(newCurr);
   }
   
-  
+  function premium() {
+    toast({
+      title: 'You are a Premium Member!',
+      description: 'New Features will be announced soon',
+      status: 'warning',
+      duration: 2000,
+      isClosable: true,
+      position: 'top',
+    });
+  }
+
   async function saveList() {
     if (!isAuthenticated) {
       return;
@@ -154,6 +180,11 @@ function App() {
       })
   }
 
+  function logout_and_clear() {
+    localStorage.clear();
+    logout({ returnTo: window.location.origin })
+  }
+
   const {colorMode, toggleColorMode} = useColorMode()
 
   return (
@@ -174,16 +205,31 @@ function App() {
           {
             isAuthenticated && 
             <HStack spacing={25}>
-              <Text 
-                fontSize={{ base: '10px', md: '20px', lg: '25px' }} 
+              <HStack
                 border="1px" 
                 p='5px 10px' 
                 borderRadius='10px'
+                
               >
-                { user.name }
-              </Text>
+                {
+                  userInfo.premium &&
+                  <IconButton 
+                    icon={<FaCrown />}
+                    isRound={true}
+                    size='md'
+                    alignSelf="flex-start"
+                    onClick={()=>premium()}
+                  />
+                }
+                <Text
+                  fontSize={{ base: '10px', md: '20px', lg: '25px' }}
+                  p='5px'
+                >
+                  { user.name }
+                </Text>
+              </HStack>
               <Image src={user.picture} alt="DP" borderRadius='full' boxSize='50px' border='1px solid black'/>
-              <Button onClick={() => logout({ returnTo: window.location.origin })}>Logout</Button>
+              <Button onClick={() => logout_and_clear() }>Logout</Button>
             </HStack>
           }
         </HStack>
